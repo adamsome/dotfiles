@@ -1,4 +1,457 @@
-syntax on
+set nocompatible        " Eliminate backwards-compatability
+syntax on               " Syntax highlighting
 
-" Wrap gitcommit file types at the appropriate length
-filetype indent plugin on
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   Plugins (NeoBundle)
+"==========================================================
+
+filetype off            " Req'd for NeoBundle
+if has('vim_starting')
+  set runtimepath+=~/.vim/bundle/neobundle.vim/
+endif
+
+call neobundle#begin(expand('~/.vim/bundle/'))
+
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+"     Bundles (Refer to |:NeoBundle-examples|)
+"----------------------------------------------------------
+
+" Status Line
+NeoBundle 'bling/vim-airline'
+
+" File Browsing
+NeoBundle 'scrooloose/nerdtree'
+
+" Productivity
+NeoBundle 'tpope/vim-unimpaired'
+NeoBundle 'terryma/vim-expand-region'
+NeoBundle 'tpope/vim-surround'
+NeoBundle 'godlygeek/tabular'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'terryma/vim-multiple-cursors'
+
+" Browsing/Searching
+NeoBundle 'scrooloose/nerdcommenter'
+NeoBundle 'ctrlpvim/ctrlp.vim'
+NeoBundle 'rking/ag.vim'
+NeoBundle 'vim-ctrlspace/vim-ctrlspace'
+NeoBundle 'grassdog/tagman.vim'
+
+" Syntax Highlighting
+NeoBundle 'tpope/vim-markdown'
+NeoBundle 'pangloss/vim-javascript'
+NeoBundle 'mxw/vim-jsx'
+NeoBundle 'scrooloose/syntastic'
+NeoBundle 'airblade/vim-gitgutter'
+
+" Colors
+NeoBundle 'morhetz/gruvbox'
+NeoBundle 'junegunn/seoul256.vim'
+
+" Miscellaneous
+NeoBundle 'terryma/vim-smooth-scroll'
+NeoBundle 'ton/vim-bufsurf'
+
+" TODO: Try these out
+"NeoBundle 'tpope/vim-repeat'
+"NeoBundle 'chrisbra/NrrwRgn'
+"NeoBundle 'justinmk/vim-sneak'
+"NeoBundle 'Raimondi/delimitMate'
+"NeoBundle 'Shougo/unite.vim'
+"NeoBundle 'Lokaltog/vim-easymotion'
+"NeoBundle 'mattn/emmet-vim'
+"NeoBundle 'Valloric/YouCompleteMe'
+"NeoBundle 'SirVer/ultisnips'
+
+
+call neobundle#end()
+filetype plugin indent on   " Req'd for NeoBundle
+
+NeoBundleCheck
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   General settings
+"==========================================================
+
+" Prevent vim from adding empty line at the end of every file
+set noeol
+set binary
+
+" UTF-8/Unicode support
+if has('multi_byte')
+  if (!has('nvim'))
+    scriptencoding utf-8
+    set encoding=utf-8
+  endif
+end
+
+"     Presentation
+"----------------------------------------------------------
+
+set number              " Precede each line with its line number
+set numberwidth=5       " Number of columns for line numbers
+if exists('+relativenumber')
+  set relativenumber    " Uses line numbers relative to current
+endif
+set textwidth=0         " Do not wrap words (insert)
+set nowrap              " Do not wrap words (view)
+set showcmd             " Show (partial) command in status line.
+set showmatch           " Show matching brackets.
+set ruler               " Line and column number of the cursor position
+set wildmenu            " Enhanced command completion
+set visualbell          " Use visual bell instead of beeping
+set laststatus=2        " Always show the status line
+set noshowmode          " Hide mode since airline already displays it
+set lazyredraw
+
+" Highlight spell errors
+hi SpellErrors guibg=red guifg=black ctermbg=red ctermfg=black
+
+" Cursor settings. This makes terminal vim sooo much nicer!
+" Tmux will only forward escape sequences to the terminal if surrounded by a DCS
+" sequence
+if exists('$TMUX')
+let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+else
+let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+endif
+
+" Splits
+set fcs=vert:│          " Vertical split seperator
+set splitright          " Always splits to the right
+set splitbelow          " Always splits below
+
+" Cursor lines
+set cursorline
+autocmd WinLeave * setlocal nocursorline
+autocmd WinEnter * setlocal cursorline
+set cursorcolumn
+autocmd WinLeave * setlocal nocursorcolumn
+autocmd WinEnter * setlocal cursorcolumn
+
+
+"     Behavior
+"----------------------------------------------------------
+
+" Ignore these files when completing & in explorer
+set wildignore=.svn,CVS,.git,.hg,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jpg,*.png,*.xpm,*.gif
+
+set autowriteall        " Automatically save before commands (:next & :make)
+set hidden              " Enable multiple modified buffers
+set history=1000
+set autoread            " Automatically read file that has been changed on disk and doesn't have changes in vim
+set modelines=0         " Turn off modelines
+set scrolloff=3         " Scroll when within 5 lines of edges
+set backspace=indent,eol,start    " Sane backspaces
+set guioptions-=T       " Disable toolbar"
+set ttimeoutlen=50      " Fast Esc to normal mode
+set completeopt=menuone,preview
+
+" Give one virtual space at end of line
+set virtualedit=onemore
+
+" Some indentation options ':h cinoptions' for details
+set cinoptions=:0,(s,u0,U1,g0,t0
+
+" Writes to the unnamed register also writes to the * and + registers. This
+" makes it easy to interact with the system clipboard
+if has ('unnamedplus')
+  set clipboard=unnamedplus
+else
+  set clipboard=unnamed
+endif
+
+" Auto save
+autocmd BufLeave,CursorHold,CursorHoldI,FocusLost * silent! wa
+
+"     Whitespace
+"----------------------------------------------------------
+
+" **Options:** set listchars=tab:▸\ ,tab:▷⋅,trail:·,eol:$,eol:¬
+" set listchars=tab:▸\ ,extends:❯,precedes:❮,trail:␣
+set listchars=tab:▸\ ,extends:❯,precedes:❮,trail:␣
+set showbreak=↪
+set list
+
+" Trailing whitespace only not in insert mode
+augroup trailing
+  au!
+  au InsertEnter * :set listchars-=trail:␣
+  au InsertLeave * :set listchars+=trail:␣
+augroup END
+
+"     Indentation
+"----------------------------------------------------------
+
+set autoindent          " Automatically indent new line
+set ts=4                " Number of spaces in a tab
+set sw=4                " Number of spaces for indent
+set softtabstop=4       " Number of spaces in softtab
+set et                  " Expand tabs into spaces
+
+"     Mouse
+"----------------------------------------------------------
+
+if has("mouse")
+  set mouse=a
+endif
+set mousehide           " Hide mouse pointer on insert mode."
+
+"     Search
+"----------------------------------------------------------
+
+set incsearch           " Incremental search
+set hlsearch            " Highlight search match
+set ignorecase          " Do case insensitive matching
+set smartcase           " Do not ignore if search pattern has CAPS
+set gdefault            " Search is global on the line instead of 1st match
+
+"     Directories
+"----------------------------------------------------------
+
+call system('mkdir -vp ~/.backup/undo/ > /dev/null 2>&1')
+set backupdir=~/.backup,.       " List of directories for the backup file
+set directory=~/.backup,~/tmp,. " List of directory names for the swap file
+set nobackup            " Do not write backup files
+" Skip backups on OSX temp dir, for crontab -e to properly work
+set backupskip+=~/tmp/*,/private/tmp/*
+set noswapfile          " Do not write .swp files
+set undofile
+set undodir=~/.backup/undo/,~/tmp,.
+
+"     Folding
+"----------------------------------------------------------
+
+set foldcolumn=0        " Columns for folding
+set foldmethod=indent
+set foldlevel=9
+set nofoldenable        " Dont fold by default
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   Mappings
+"==========================================================
+
+let mapleader = ","
+let maplocalleader = "\\"
+
+" No arrow keys allowed!
+noremap <left> <nop>
+noremap <up> <nop>
+noremap <down> <nop>
+noremap <right> <nop>
+
+" Remap arrow keys
+nnoremap <left> :bprev<CR>
+nnoremap <right> :bnext<CR>
+nnoremap <up> :tabnext<CR>
+nnoremap <down> :tabprev<CR>
+
+" Move by screen line, not file line
+nnoremap j gj
+nnoremap k gk
+
+" Easier command and escape keys
+"nnoremap ; :
+inoremap kj <ESC>
+inoremap jk <ESC>
+inoremap <esc> <nop>
+
+" Fast editing of the .vimrc
+nnoremap <Leader>e :e! ~/.vimrc<cr>
+
+" Sane regexes
+nnoremap / /\v
+vnoremap / /\v
+nnoremap ? ?\v
+vnoremap ? ?\v
+nnoremap :s/ :s/\v
+
+" Clear highlight after search
+noremap <silent><Leader>/ :nohls<CR>
+
+" Middle-click paste
+noremap! <s-insert> <middlemouse>
+
+" <Leader>w: Close current buffer
+nnoremap <Leader>w :NERDTreeClose<cr>:bdelete<cr>
+
+" Save quickly w/ 'W'
+command! W :w
+
+" Map Y to yank to line end (similar to D)
+nnoremap Y y$
+
+" Bubble line transpose
+nmap <c-k> [e
+nmap <c-j> ]e
+vmap <c-k> [egv
+vmap <c-j> ]egv
+
+" Auto center
+nnoremap <silent> n nzz
+nnoremap <silent> N Nzz
+nnoremap <silent> * *zz
+nnoremap <silent> # #zz
+nnoremap <silent> g* g*zz
+nnoremap <silent> g# g#zz
+nnoremap <silent> <C-o> <C-o>zz
+nnoremap <silent> <C-i> <C-i>zz
+
+" Reselect visual block after indent
+vnoremap < <gv
+vnoremap > >gv
+
+" Shortcuts for windows
+nnoremap <leader>v <C-w>v<C-w>l
+nnoremap <leader>s <C-w>s
+"nnoremap <leader>vsa :vert sba<cr>
+" Bug in nvim (see #2048)
+"if has('nvim')
+"  nmap <BS> <C-W>h
+"endif
+nnoremap <C-left> <C-w>h
+nnoremap <C-down> <C-w>j
+nnoremap <C-up> <C-w>k
+nnoremap <C-right> <C-w>l
+
+" Remap shift- home arrows
+noremap H ^
+map K <Plug>(expand_region_expand)
+map J <Plug>(expand_region_shrink)
+noremap L g_
+
+" Easy search and replace
+nnoremap <c-s><c-s> /\v<c-r><c-w>
+nnoremap <c-s><c-r> :%s/<c-r><c-w>//gc<left><left><left>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   Plugin Configuration
+"==========================================================
+
+"   Airline
+"----------------------------------------------------------
+
+let g:airline_powerline_fonts=1
+
+" Enable the list of buffers
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#ctrlp#show_adjacent_modes = 1
+let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#syntastic#enabled = 1
+let g:airline#extensions#ctrlspace#enabled = 1
+
+"   NERDTree
+"----------------------------------------------------------
+
+let NERDTreeWinPos='right'
+noremap <tab> :NERDTreeToggle<cr>
+noremap <leader>f :NERDTreeFind<cr>
+
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+let NERDTreeIgnore=['\.DS_Store$']
+let NERDTreeShowHidden=1
+
+"   NERDCommenter
+"----------------------------------------------------------
+
+" Invert comment on the current line/selection
+nmap <c-_> :call NERDComment(0, "invert")<cr>
+vmap <c-_> :call NERDComment(0, "invert")<cr>
+
+"   Markdown
+"----------------------------------------------------------
+
+autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+let g:markdown_fenced_languages = ['python', 'css', 'erb=eruby', 'javascript', 'js=javascript', 'json=javascript', 'ruby', 'sass', 'xml', 'html']
+
+"   SmoothScroll
+"----------------------------------------------------------
+
+noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 5, 1)<cr>
+noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 5, 1)<cr>
+
+"   BufSurf
+"----------------------------------------------------------
+
+nnoremap <silent> <s-left> :BufSurfBack<cr>
+nnoremap <silent> <s-right> :BufSurfForward<cr>
+
+"   CtrlP
+"----------------------------------------------------------
+
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/](\.git|\.hg|\.svn|node_modules)$',
+  \ 'file': '\v\.(exe|so|dll)$',
+  \ }
+let g:ctrlp_map = '<leader>,'
+
+"   Syntastic
+"----------------------------------------------------------
+
+let g:syntastic_javascript_checkers = ['eslint']
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
+
+let g:syntastic_error_symbol = "✗"
+let g:syntastic_warning_symbol = "⚠"
+
+"   vim-jsx
+"----------------------------------------------------------
+
+let g:jsx_ext_required = 0
+
+"   CtrlSpace
+"----------------------------------------------------------
+
+if executable("ag")
+    let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
+endif
+
+"   Fugative
+"----------------------------------------------------------
+
+nmap <leader>gs :Gstatus<cr>
+nmap <leader>gc :Gcommit<cr>
+nmap <leader>ga :Gwrite<cr>
+nmap <leader>gl :Glog<cr>
+nmap <leader>gd :Gdiff<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   Appearance
+"==========================================================
+
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+set background=dark
+
+" Use the first available colorscheme in this list
+for scheme in ['gruvbox', 'seoul256', 'solarized', 'molokai']
+  try
+    execute 'colorscheme '.scheme
+    break
+  catch
+    continue
+  endtry
+endfor
+
+" Good for seoul256
+"let g:airline_theme='zenburn'
+
+let g:gruvbox_termcolors=256
+
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+
+" Color columns after 80 chars
+let &colorcolumn=join(range(81,500),",")
+highlight ColorColumn ctermbg=236
