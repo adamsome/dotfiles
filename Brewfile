@@ -11,7 +11,6 @@ brew 'tmux'
 brew 'tree'
 brew 'wget'
 brew 'youtube-dl'
-brew 'zsh-syntax-highlighting'
 
 cask 'battle-net'
 cask 'calibre'
