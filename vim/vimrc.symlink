@@ -554,7 +554,7 @@ omap T <Plug>Sneak_T
 "   Tmux Navigate
 "----------------------------------------------------------
 
-!et g:tmux_navigator_no_mappings = 1
+let g:tmux_navigator_no_mappings = 1
 
 nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
 nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
