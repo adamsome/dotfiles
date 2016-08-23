@@ -1,5 +1,6 @@
-set nocompatible        " Eliminate backwards-compatability
+set nocompatible        " Eliminate backwards-compatibility
 syntax on               " Syntax highlighting
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "   Plugins (NeoBundle)
@@ -14,61 +15,70 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-"     Bundles (Refer to |:NeoBundle-examples|)
+
+"     Bundles
 "----------------------------------------------------------
 
-" Status Line
-NeoBundle 'bling/vim-airline'
-
-" File Browsing
-NeoBundle 'scrooloose/nerdtree'
-
-" Productivity
-NeoBundle 'tpope/vim-unimpaired'
-NeoBundle 'terryma/vim-expand-region'
-NeoBundle 'tpope/vim-surround'
-NeoBundle 'godlygeek/tabular'
+" Integration
 NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'terryma/vim-multiple-cursors'
-
-" Browsing/Searching
-NeoBundle 'scrooloose/nerdcommenter'
-NeoBundle 'ctrlpvim/ctrlp.vim'
 NeoBundle 'rking/ag.vim'
-NeoBundle 'vim-ctrlspace/vim-ctrlspace'
-NeoBundle 'grassdog/tagman.vim'
+NeoBundle 'christoomey/vim-tmux-navigator'
 
-" Syntax Highlighting
+" Status
+NeoBundle 'bling/vim-airline'
+NeoBundle 'airblade/vim-gitgutter'
+NeoBundle 'scrooloose/syntastic'
+
+" Files
+NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'vim-ctrlspace/vim-ctrlspace'
+
+" Editing
+NeoBundle 'scrooloose/nerdcommenter'
+NeoBundle 'tpope/vim-unimpaired'
+NeoBundle 'godlygeek/tabular'
+NeoBundle 'terryma/vim-multiple-cursors'
+NeoBundle 'justinmk/vim-sneak'
+NeoBundle 'Raimondi/delimitMate'
+
+" Syntax
 NeoBundle 'tpope/vim-markdown'
 NeoBundle 'pangloss/vim-javascript'
 NeoBundle 'mxw/vim-jsx'
-NeoBundle 'scrooloose/syntastic'
-NeoBundle 'airblade/vim-gitgutter'
 
 " Colors
 NeoBundle 'morhetz/gruvbox'
-NeoBundle 'junegunn/seoul256.vim'
-
-" Miscellaneous
-NeoBundle 'terryma/vim-smooth-scroll'
-NeoBundle 'ton/vim-bufsurf'
 
 " TODO: Try these out
-"NeoBundle 'tpope/vim-repeat'
 "NeoBundle 'chrisbra/NrrwRgn'
-"NeoBundle 'justinmk/vim-sneak'
-"NeoBundle 'Raimondi/delimitMate'
 "NeoBundle 'Shougo/unite.vim'
-"NeoBundle 'Lokaltog/vim-easymotion'
 "NeoBundle 'mattn/emmet-vim'
 "NeoBundle 'Valloric/YouCompleteMe'
 "NeoBundle 'SirVer/ultisnips'
 
+" Disabled
+"NeoBundle 'grassdog/tagman.vim'
+"NeoBundle 'Lokaltog/vim-easymotion'
+"NeoBundle 'ton/vim-bufsurf'
+"NeoBundle 'junegunn/seoul256.vim'
+"NeoBundle 'ctrlpvim/ctrlp.vim'
+"NeoBundle 'mhinz/vim-signify'
+"NeoBundle 'terryma/vim-expand-region'
+"NeoBundle 'tpope/vim-surround'
+"NeoBundle 'tpope/vim-repeat'
+"NeoBundle 'terryma/vim-smooth-scroll'
+"NeoBundle 'tpope/vim-haml'
+"NeoBundle 'cespare/vim-toml'
+
+
+"     End NeoBundle
+"----------------------------------------------------------
 
 call neobundle#end()
 filetype plugin indent on   " Req'd for NeoBundle
 
 NeoBundleCheck
+
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -86,6 +96,7 @@ if has('multi_byte')
     set encoding=utf-8
   endif
 end
+
 
 "     Presentation
 "----------------------------------------------------------
@@ -109,6 +120,19 @@ set lazyredraw
 " Highlight spell errors
 hi SpellErrors guibg=red guifg=black ctermbg=red ctermfg=black
 
+" Splits
+set fcs=vert:│          " Vertical split separator
+set splitright          " Always splits to the right
+set splitbelow          " Always splits below
+
+" Hide cursor lines when in another buffer
+set cursorline
+autocmd WinLeave * setlocal nocursorline
+autocmd WinEnter * setlocal cursorline
+set cursorcolumn
+autocmd WinLeave * setlocal nocursorcolumn
+autocmd WinEnter * setlocal cursorcolumn
+
 " Cursor settings. This makes terminal vim sooo much nicer!
 " Tmux will only forward escape sequences to the terminal if surrounded by a DCS
 " sequence
@@ -120,19 +144,6 @@ let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 endif
 
-" Splits
-set fcs=vert:│          " Vertical split seperator
-set splitright          " Always splits to the right
-set splitbelow          " Always splits below
-
-" Cursor lines
-set cursorline
-autocmd WinLeave * setlocal nocursorline
-autocmd WinEnter * setlocal cursorline
-set cursorcolumn
-autocmd WinLeave * setlocal nocursorcolumn
-autocmd WinEnter * setlocal cursorcolumn
-
 
 "     Behavior
 "----------------------------------------------------------
@@ -142,20 +153,18 @@ set wildignore=.svn,CVS,.git,.hg,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jp
 
 set autowriteall        " Automatically save before commands (:next & :make)
 set hidden              " Enable multiple modified buffers
-set history=1000
-set autoread            " Automatically read file that has been changed on disk and doesn't have changes in vim
+set history=200         " Command line history
+set autoread            " Automatically read file that has been changed on disk
+                        " and doesn't have changes in vim
 set modelines=0         " Turn off modelines
-set scrolloff=3         " Scroll when within 5 lines of edges
+set scrolloff=3         " Scroll when within 5 lines of top/bottom
+if !&sidescrolloff
+  set sidescrolloff=5   " Scroll when with 5 lines of sides
+endif
 set backspace=indent,eol,start    " Sane backspaces
 set guioptions-=T       " Disable toolbar"
 set ttimeoutlen=50      " Fast Esc to normal mode
 set completeopt=menuone,preview
-
-" Give one virtual space at end of line
-set virtualedit=onemore
-
-" Some indentation options ':h cinoptions' for details
-set cinoptions=:0,(s,u0,U1,g0,t0
 
 " Writes to the unnamed register also writes to the * and + registers. This
 " makes it easy to interact with the system clipboard
@@ -168,13 +177,48 @@ endif
 " Auto save
 autocmd BufLeave,CursorHold,CursorHoldI,FocusLost * silent! wa
 
+augroup vimrcEx
+  autocmd!
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it for commit messages, when the position is invalid, or when
+  " inside an event handler (happens when dropping a file on gvim).
+  autocmd BufReadPost *
+    \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+augroup END
+
+" Delete comment character when joining commented lines
+if v:version > 703 || v:version == 703 && has("patch541")
+  set formatoptions+=j
+endif
+
+
 "     Whitespace
 "----------------------------------------------------------
 
-" **Options:** set listchars=tab:▸\ ,tab:▷⋅,trail:·,eol:$,eol:¬
-" set listchars=tab:▸\ ,extends:❯,precedes:❮,trail:␣
-set listchars=tab:▸\ ,extends:❯,precedes:❮,trail:␣
-set showbreak=↪
+" Soft tab settings
+set autoindent          " Automatically indent new line
+set ts=4                " Number of spaces in a tab
+set sw=4                " Number of spaces for indent
+set softtabstop=4       " Number of spaces in softtab
+set et                  " Expand tabs into spaces
+
+" Some indentation options ':h cinoptions' for details
+set cinoptions=:0,(s,u0,U1,g0,t0
+
+" Give one virtual space at end of line
+set virtualedit=onemore
+
+" Use one space, not two, after punctuation.
+set nojoinspaces
+
+" Shown whitespace characters
+set listchars=tab:‣\ ,extends:,precedes:,trail:␣,nbsp:+
+set showbreak=└
+" Old settings (works w/ some typefaces)
+"set listchars=tab:▸\ ,extends:❯,precedes:❮,trail:␣
+"set showbreak=↪
 set list
 
 " Trailing whitespace only not in insert mode
@@ -184,14 +228,6 @@ augroup trailing
   au InsertLeave * :set listchars+=trail:␣
 augroup END
 
-"     Indentation
-"----------------------------------------------------------
-
-set autoindent          " Automatically indent new line
-set ts=4                " Number of spaces in a tab
-set sw=4                " Number of spaces for indent
-set softtabstop=4       " Number of spaces in softtab
-set et                  " Expand tabs into spaces
 
 "     Mouse
 "----------------------------------------------------------
@@ -200,6 +236,12 @@ if has("mouse")
   set mouse=a
 endif
 set mousehide           " Hide mouse pointer on insert mode."
+if has("mouse_sgr")
+    set ttymouse=sgr
+else
+    set ttymouse=xterm2
+end
+
 
 "     Search
 "----------------------------------------------------------
@@ -209,6 +251,7 @@ set hlsearch            " Highlight search match
 set ignorecase          " Do case insensitive matching
 set smartcase           " Do not ignore if search pattern has CAPS
 set gdefault            " Search is global on the line instead of 1st match
+
 
 "     Directories
 "----------------------------------------------------------
@@ -223,46 +266,46 @@ set noswapfile          " Do not write .swp files
 set undofile
 set undodir=~/.backup/undo/,~/tmp,.
 
+
 "     Folding
 "----------------------------------------------------------
 
 set foldcolumn=0        " Columns for folding
 set foldmethod=indent
 set foldlevel=9
-set nofoldenable        " Dont fold by default
+set nofoldenable        " Don't fold by default
+
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "   Mappings
 "==========================================================
 
-let mapleader = ","
+let mapleader = " "
 let maplocalleader = "\\"
 
 " No arrow keys allowed!
-noremap <left> <nop>
-noremap <up> <nop>
-noremap <down> <nop>
-noremap <right> <nop>
-
-" Remap arrow keys
-nnoremap <left> :bprev<CR>
-nnoremap <right> :bnext<CR>
-nnoremap <up> :tabnext<CR>
-nnoremap <down> :tabprev<CR>
+nnoremap <up> :echo "Use 'k' to move up."<cr>
+nnoremap <down> :echo "Use 'j' to move down."<cr>
+nnoremap <left> :echo "Use 'h' to move left."<cr>
+nnoremap <right> :echo "Use 'l' to move right."<cr>
+" Fix VIM issue where arrow keys in insert mode insert letters
+imap OA <C-o>:echo "Use 'k' to move up."<cr>
+imap OB <C-o>:echo "Use 'j' to move down."<cr>
+imap OC <C-o>:echo "Use 'l' to move right."<cr>
+imap OD <C-o>:echo "Use 'h' to move left."<cr>
 
 " Move by screen line, not file line
 nnoremap j gj
 nnoremap k gk
 
 " Easier command and escape keys
-"nnoremap ; :
-inoremap kj <ESC>
-inoremap jk <ESC>
+inoremap kj <esc>
+inoremap jk <esc>
 inoremap <esc> <nop>
 
 " Fast editing of the .vimrc
-nnoremap <Leader>e :e! ~/.vimrc<cr>
+nnoremap <leader>e :e! ~/.vimrc<cr>
 
 " Sane regexes
 nnoremap / /\v
@@ -272,25 +315,45 @@ vnoremap ? ?\v
 nnoremap :s/ :s/\v
 
 " Clear highlight after search
-noremap <silent><Leader>/ :nohls<CR>
+noremap <silent><leader>/ :nohlsearch<CR>
 
 " Middle-click paste
 noremap! <s-insert> <middlemouse>
 
-" <Leader>w: Close current buffer
-nnoremap <Leader>w :NERDTreeClose<cr>:bdelete<cr>
+" Close & save files
+nnoremap <leader>w :NERDTreeClose<cr>:bdelete<cr>
+nnoremap <leader>q :q<cr>
+nnoremap <leader>s :w<cr>
 
-" Save quickly w/ 'W'
-command! W :w
-
-" Map Y to yank to line end (similar to D)
+" Map Y to yank to line end (similar to D & C)
 nnoremap Y y$
 
 " Bubble line transpose
-nmap <c-k> [e
-nmap <c-j> ]e
-vmap <c-k> [egv
-vmap <c-j> ]egv
+nmap K [e
+nmap J ]e
+vmap K [egv
+vmap J ]egv
+
+" Easy goto begin and end of line
+noremap H ^
+noremap L g_
+
+" Reselect visual block after indent
+vnoremap < <gv
+vnoremap > >gv
+
+" Shortcuts for windows
+nnoremap <leader>v <C-w>v<C-w>l
+nnoremap <leader>V <C-w>s
+" Disabled since tmux-navigator handles
+"nnoremap <C-h> <C-w>h
+"nnoremap <C-j> <C-w>j
+"nnoremap <C-k> <C-w>k
+"nnoremap <C-l> <C-w>l
+
+" Easy search and replace
+nnoremap <leader>f /\v<c-r><c-w>
+nnoremap <leader>g :%s/<c-r><c-w>//gc<left><left><left>
 
 " Auto center
 nnoremap <silent> n nzz
@@ -302,32 +365,33 @@ nnoremap <silent> g# g#zz
 nnoremap <silent> <C-o> <C-o>zz
 nnoremap <silent> <C-i> <C-i>zz
 
-" Reselect visual block after indent
-vnoremap < <gv
-vnoremap > >gv
+" Tab completion
+" - Will insert tab at beginning of line,
+" - Will use completion if not at beginning
+set wildmode=list:longest,list:full
+function! InsertTabWrapper()
+    let col = col('.') - 1
+    if !col || getline('.')[col - 1] !~ '\k'
+        return "\<tab>"
+    else
+        return "\<c-n>"
+    endif
+endfunction
+inoremap <Tab> <c-r>=InsertTabWrapper()<cr>
+inoremap <S-Tab> <c-p>
 
-" Shortcuts for windows
-nnoremap <leader>v <C-w>v<C-w>l
-nnoremap <leader>s <C-w>s
-"nnoremap <leader>vsa :vert sba<cr>
-" Bug in nvim (see #2048)
-"if has('nvim')
-"  nmap <BS> <C-W>h
-"endif
-nnoremap <C-left> <C-w>h
-nnoremap <C-down> <C-w>j
-nnoremap <C-up> <C-w>k
-nnoremap <C-right> <C-w>l
+" Improved Join (like gJ, but always remove spaces)
+function! JoinSpaceless()
+    execute 'normal gJ'
 
-" Remap shift- home arrows
-noremap H ^
-map K <Plug>(expand_region_expand)
-map J <Plug>(expand_region_shrink)
-noremap L g_
+    " Character under cursor is whitespace?
+    if matchstr(getline('.'), '\%' . col('.') . 'c.') =~ '\s'
+        " When remove it!
+        execute 'normal dw'
+    endif
+endfunction
+nnoremap <Leader>J :call JoinSpaceless()<CR>
 
-" Easy search and replace
-nnoremap <c-s><c-s> /\v<c-r><c-w>
-nnoremap <c-s><c-r> :%s/<c-r><c-w>//gc<left><left><left>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -338,13 +402,13 @@ nnoremap <c-s><c-r> :%s/<c-r><c-w>//gc<left><left><left>
 "----------------------------------------------------------
 
 let g:airline_powerline_fonts=1
+let g:airline_extensions=['tabline', 'branch', 'syntastic', 'ctrlspace']
 
-" Enable the list of buffers
 let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#ctrlp#show_adjacent_modes = 1
 let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#ctrlspace#enabled = 1
+
 
 "   NERDTree
 "----------------------------------------------------------
@@ -353,9 +417,15 @@ let NERDTreeWinPos='right'
 noremap \ :NERDTreeToggle<cr>
 noremap \| :NERDTreeFind<cr>
 
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+autocmd bufenter *
+  \ if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree())
+  \   | q |
+  \ endif
 let NERDTreeIgnore=['\.DS_Store$']
 let NERDTreeShowHidden=1
+let g:NERDTreeDirArrowExpandable='+'
+let g:NERDTreeDirArrowCollapsible='~'
+
 
 "   NERDCommenter
 "----------------------------------------------------------
@@ -364,32 +434,68 @@ let NERDTreeShowHidden=1
 nmap <c-_> :call NERDComment(0, "invert")<cr>
 vmap <c-_> :call NERDComment(0, "invert")<cr>
 
+
 "   Markdown
 "----------------------------------------------------------
 
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
-let g:markdown_fenced_languages = ['python', 'css', 'erb=eruby', 'javascript', 'js=javascript', 'json=javascript', 'ruby', 'sass', 'xml', 'html']
+let g:markdown_fenced_languages = [
+  \ 'python',
+  \ 'css',
+  \ 'erb=eruby',
+  \ 'javascript',
+  \ 'js=javascript',
+  \ 'json=javascript',
+  \ 'ruby',
+  \ 'sass',
+  \ 'xml',
+  \ 'html'
+\ ]
 
-"   SmoothScroll
+
+"   Fugitive
 "----------------------------------------------------------
 
-noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 5, 1)<cr>
-noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 5, 1)<cr>
+nmap <leader>gs :Gstatus<cr>
+nmap <leader>gc :Gcommit<cr>
+nmap <leader>ga :Gwrite<cr>
+nmap <leader>gl :Glog<cr>
+nmap <leader>gd :Gdiff<cr>
 
-"   BufSurf
-"----------------------------------------------------------
-
-nnoremap <silent> <s-left> :BufSurfBack<cr>
-nnoremap <silent> <s-right> :BufSurfForward<cr>
 
 "   CtrlP
 "----------------------------------------------------------
 
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/](\.git|\.hg|\.svn|node_modules)$',
-  \ 'file': '\v\.(exe|so|dll)$',
-  \ }
-let g:ctrlp_map = '<leader>,'
+"let g:ctrlp_custom_ignore = {
+  "\ 'dir':  '\v[\/](\.git|\.hg|\.svn|node_modules)$',
+  "\ 'file': '\v\.(exe|so|dll)$',
+  "\ }
+"let g:ctrlp_map = '<leader>,'
+
+
+"   CtrlSpace
+"----------------------------------------------------------
+
+if executable("ag")
+  let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
+endif
+
+let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
+let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
+let g:CtrlSpaceSaveWorkspaceOnExit = 1
+
+nnoremap <silent><leader><leader> :CtrlSpace O<cr>
+
+let g:CtrlSpaceProjectRootMarkers = [
+         \ ".git",
+         \ ".hg",
+         \ ".svn",
+         \ ".bzr",
+         \ "_darcs",
+         \ "CVS",
+         \ ".classpath"
+         \ ]
+
 
 "   Syntastic
 "----------------------------------------------------------
@@ -406,35 +512,62 @@ if exists(':SyntasticCheck')
     let g:syntastic_check_on_wq = 0
 
     let g:syntastic_error_symbol = "✗"
-    let g:syntastic_warning_symbol = "⚠"
+    let g:syntastic_warning_symbol = "!"
 endif
+
+
+"   delimitMate
+"----------------------------------------------------------
+
+let g:delimitMate_expand_cr = 1
+let g:delimitMate_expand_space = 1
+
 
 "   vim-jsx
 "----------------------------------------------------------
 
 let g:jsx_ext_required = 0
 
-"   CtrlSpace
+
+"   sneak.vim
 "----------------------------------------------------------
 
-if executable("ag")
-    let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
-endif
+let g:sneak#streak = 1
+let g:sneak#s_next = 1
 
-"   Fugative
+" Replace 'f' with 1-char Sneak
+nmap f <Plug>Sneak_f
+nmap F <Plug>Sneak_F
+xmap f <Plug>Sneak_f
+xmap F <Plug>Sneak_F
+omap f <Plug>Sneak_f
+omap F <Plug>Sneak_F
+" Replace 't' with 1-char Sneak
+nmap t <Plug>Sneak_t
+nmap T <Plug>Sneak_T
+xmap t <Plug>Sneak_t
+xmap T <Plug>Sneak_T
+omap t <Plug>Sneak_t
+omap T <Plug>Sneak_T
+
+
+"   Tmux Navigate
 "----------------------------------------------------------
 
-nmap <leader>gs :Gstatus<cr>
-nmap <leader>gc :Gcommit<cr>
-nmap <leader>ga :Gwrite<cr>
-nmap <leader>gl :Glog<cr>
-nmap <leader>gd :Gdiff<cr>
+!et g:tmux_navigator_no_mappings = 1
+
+nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
+nnoremap <silent> <C-\> :TmuxNavigatePrevious<cr>
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "   Appearance
 "==========================================================
 
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set background=dark
 
 " Use the first available colorscheme in this list
@@ -447,13 +580,17 @@ for scheme in ['gruvbox', 'seoul256', 'solarized', 'molokai']
   endtry
 endfor
 
-" Good for seoul256
-"let g:airline_theme='zenburn'
-
-let g:gruvbox_termcolors=256
-
-let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+" let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+" let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
 " Color columns after 80 chars
 let &colorcolumn=join(range(81,500),",")
 highlight ColorColumn ctermbg=236
+
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"   Local
+"=========================================================
+
+set exrc
