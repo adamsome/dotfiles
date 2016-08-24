@@ -6,15 +6,19 @@
 # to make sure you're on the latest and greatest.
 export DOTFILES=$HOME/.dotfiles
 
-# Set macOS defaults
-$DOTFILES/macos/set-defaults.sh
+# If we're on a Mac
+if [ "$(uname -s)" == "Darwin" ]
+then
+  # Set macOS defaults
+  $DOTFILES/macos/set-defaults.sh
 
-# Install homebrew
-$DOTFILES/homebrew/install.sh 2>&1
+  # Install homebrew
+  $DOTFILES/homebrew/install.sh 2>&1
 
-# Upgrade homebrew
-echo "› brew update"
-brew update
+  # Upgrade homebrew
+  echo "› brew update"
+  brew update
+fi
 
 # Install software
 echo "› $DOTFILES/script/install"
