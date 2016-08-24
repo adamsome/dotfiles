@@ -130,26 +130,34 @@ install_dotfiles () {
 
   local overwrite_all=false backup_all=false skip_all=false
 
-  for src in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' -not -path '*.git*')
+  # Exclude babun and git directories
+  for src in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' -not -path '*.git*' -not -path '*/babun/*')
   do
     dst="$HOME/.$(basename "${src%.*}")"
     link_file "$src" "$dst"
   done
+
+  # If we're on babun
+  if [ "$(uname -s)" == "CYGWIN_NT-6.1-WOW" ]
+  then
+    for src in $(find -H "$DOTFILES_ROOT/babun" -maxdepth 2 -name '*.symlink')
+    do
+      dst="$HOME/.$(basename "${src%.*}")"
+      link_file "$src" "$dst"
+    done
+  fi
 }
 
 setup_gitconfig
 install_dotfiles
 
-# If we're on a Mac, let's install and setup homebrew.
-if [ "$(uname -s)" == "Darwin" ]
+# Install dependencies
+info "installing dependencies"
+if source bin/dot > /tmp/dotfiles-dot 2>&1
 then
-  info "installing dependencies"
-  if source bin/dot > /tmp/dotfiles-dot 2>&1
-  then
-    success "dependencies installed"
-  else
-    fail "error installing dependencies"
-  fi
+  success "dependencies installed"
+else
+  fail "error installing dependencies"
 fi
 
 echo ''
