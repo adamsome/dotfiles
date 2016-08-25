@@ -7,6 +7,9 @@
 #
 # In order for this theme to render correctly, you will need a
 # [Powerline-patched font](https://github.com/Lokaltog/powerline-fonts).
+# Make sure you have a recent version: the code points that Powerline
+# uses changed in 2012, and older versions will display incorrectly,
+# in confusing ways.
 #
 # In addition, I recommend the
 # [Solarized theme](https://github.com/altercation/solarized/) and, if you're
@@ -26,21 +29,40 @@
 # A few utility functions to make it easy and re-usable to draw segmented prompts
 
 CURRENT_BG='NONE'
-
 # Custom colors
-ZSH_THEME_DARK=black
-ZSH_THEME_DIR_DARK=237
-ZSH_THEME_DIR_LIGHT=243
-ZSH_THEME_VCS_DARK=239
-ZSH_THEME_VCS_LIGHT=245
-ZSH_THEME_VCS_DIRTY=3
+ZSH_THEME_DARK=237
+ZSH_THEME_DIR_DARK=239
+ZSH_THEME_DIR_LIGHT=246
+ZSH_THEME_VCS_DARK=241
+ZSH_THEME_VCS_LIGHT=248
+ZSH_THEME_VCS_DIRTY=214
 
-# Fix odd char on mac
-if [[ `uname` == 'Darwin' ]]; then
-    SEGMENT_SEPARATOR='\ue0b0'
-else
-    SEGMENT_SEPARATOR=''
-fi
+ZSH_THEME_SVN_PROMPT_PREFIX=""
+ZSH_THEME_SVN_PROMPT_SUFFIX=""
+ZSH_THEME_SVN_PROMPT_DIRTY="$fg[black]$bg[red]!%K{$ZSH_THEME_VCS_DARK}"
+ZSH_THEME_SVN_PROMPT_CLEAN="$fg[green]"
+ZSH_THEME_SVN_PROMPT_ADDITIONS="$fg[green]✚"
+ZSH_THEME_SVN_PROMPT_DELETIONS="$fg[red]✖"
+ZSH_THEME_SVN_PROMPT_MODIFICATIONS="$fg[yellow]±"
+ZSH_THEME_SVN_PROMPT_REPLACEMENTS="$fg[red]~"
+ZSH_THEME_SVN_PROMPT_UNTRACKED="$fg[green]?"
+
+# Special Powerline characters
+
+() {
+  local LC_ALL="" LC_CTYPE="en_US.UTF-8"
+  # NOTE: This segment separator character is correct.  In 2012, Powerline changed
+  # the code points they use for their special characters. This is the new code point.
+  # If this is not working for you, you probably have an old version of the
+  # Powerline-patched fonts installed. Download and install the new version.
+  # Do not submit PRs to change this unless you have reviewed the Powerline code point
+  # history and have new information.
+  # This is defined using a Unicode escape sequence so it is unambiguously readable, regardless of
+  # what font the user is viewing this source code in. Do not replace the
+  # escape sequence with a single literal character.
+  # Do not change this! Do not make it '\u2b80'; that is the old, wrong code point.
+  SEGMENT_SEPARATOR=$'\ue0b0'
+}
 
 # Begin a segment
 # Takes two arguments, background and foreground. Both can be omitted,
@@ -81,12 +103,22 @@ prompt_context() {
 
 # Git: branch/detached head, dirty status
 prompt_git() {
+  local PL_BRANCH_CHAR
+  () {
+    local LC_ALL="" LC_CTYPE="en_US.UTF-8"
+    PL_BRANCH_CHAR=$'\ue0a0'         # 
+  }
   local ref dirty mode repo_path
+
   repo_path=$(git rev-parse --git-dir 2>/dev/null)
 
   if $(git rev-parse --is-inside-work-tree >/dev/null 2>&1); then
+
+    prompt_segment $ZSH_THEME_VCS_DARK $ZSH_THEME_VCS_LIGHT
+    echo -n "$PL_BRANCH_CHAR"
+
     dirty=$(parse_git_dirty)
-    ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git show-ref --head -s --abbrev |head -n1 2> /dev/null)"
+    ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git rev-parse --short HEAD 2> /dev/null)"
     if [[ -n $dirty ]]; then
       prompt_segment $ZSH_THEME_VCS_DARK $ZSH_THEME_VCS_DIRTY
     else
@@ -108,12 +140,11 @@ prompt_git() {
     zstyle ':vcs_info:*' get-revision true
     zstyle ':vcs_info:*' check-for-changes true
     zstyle ':vcs_info:*' stagedstr '✚'
-    zstyle ':vcs_info:git:*' unstagedstr '●'
+    zstyle ':vcs_info:*' unstagedstr '●'
     zstyle ':vcs_info:*' formats ' %u%c'
     zstyle ':vcs_info:*' actionformats ' %u%c'
     vcs_info
 
-    echo -n " "
     # ref is in format 'refs/heads/branch_name'; remove 'refs/heads/'
     echo -n "${ref/refs\/heads\//}"
     echo -n "${vcs_info_msg_0_%% }${mode}"
@@ -121,6 +152,7 @@ prompt_git() {
 }
 
 prompt_hg() {
+  (( $+commands[hg] )) || return
   local rev status
   if $(hg id >/dev/null 2>&1); then
     if $(hg prompt >/dev/null 2>&1); then
@@ -151,6 +183,61 @@ prompt_hg() {
         prompt_segment green $ZSH_THEME_DARK
       fi
       echo -n "☿ $rev@$branch" $st
+    fi
+  fi
+}
+
+upsearch () {
+  slashes=${PWD//[^\/]/}
+  directory="$PWD"
+  for (( n=${#slashes}; n>0; --n ))
+  do
+    test -e "$directory/$1" && return 0
+    directory="$directory/.."
+  done
+  return 1
+}
+
+function svn_status_info() {
+  local svn_status_string="$ZSH_THEME_SVN_PROMPT_CLEAN"
+  local svn_status="$(svn status 2> /dev/null)";
+  if command grep -E '^\s*A' &> /dev/null <<< $svn_status; then svn_status_string="$svn_status_string ${ZSH_THEME_SVN_PROMPT_ADDITIONS:-+}"; fi
+  if command grep -E '^\s*D' &> /dev/null <<< $svn_status; then svn_status_string="$svn_status_string ${ZSH_THEME_SVN_PROMPT_DELETIONS:-✖}"; fi
+  if command grep -E '^\s*M' &> /dev/null <<< $svn_status; then svn_status_string="$svn_status_string ${ZSH_THEME_SVN_PROMPT_MODIFICATIONS:-✎}"; fi
+  if command grep -E '^\s*[R~]' &> /dev/null <<< $svn_status; then svn_status_string="$svn_status_string ${ZSH_THEME_SVN_PROMPT_REPLACEMENTS:-~}"; fi
+  if command grep -E '^\s*\?' &> /dev/null <<< $svn_status; then svn_status_string="$svn_status_string ${ZSH_THEME_SVN_PROMPT_UNTRACKED:-?}"; fi
+  if command grep -E '^\s*[CI!L]' &> /dev/null <<< $svn_status; then svn_status_string="$svn_status_string ${ZSH_THEME_SVN_PROMPT_DIRTY:-'!'}"; fi
+  echo -n $svn_status_string
+}
+
+prompt_svn() {
+  local svn_info rev branch
+  local PL_BRANCH_CHAR
+  () {
+    local LC_ALL="" LC_CTYPE="en_US.UTF-8"
+    PL_BRANCH_CHAR=$'\ue0a0'         # 
+  }
+  #if [ -d ".svn" ]; then
+  upsearch .svn
+  if [ $? -eq 0 ]; then
+    svn_info="$(svn info 2> /dev/null)";
+    if [ $? -eq 0 ]; then
+      rev=$(echo $svn_info | sed -n 's/Revision:\ //p')
+      branch=$(echo $svn_info | \
+        awk -F/ \
+        '/^URL:/ { \
+          for (i=0; i<=NF; i++) { \
+            if ($i == "branches" || $i == "tags" ) { \
+              print $(i+1); \
+              break;\
+            }; \
+            if ($i == "trunk") { print $i; break; } \
+          } \
+        }'
+      )
+      prompt_segment $ZSH_THEME_VCS_DARK $ZSH_THEME_VCS_LIGHT
+      echo -n "$PL_BRANCH_CHAR $branch:$rev"
+      svn_status_info
     fi
   fi
 }
@@ -190,7 +277,9 @@ build_prompt() {
   prompt_context
   prompt_dir
   prompt_git
+  # No use for hg
   #prompt_hg
+  prompt_svn
   prompt_end
 }
 
