@@ -3,10 +3,13 @@ FontHeight=16
 CursorType=block
 CursorBlinks=no
 BoldAsFont=yes
+Scrollbar=none
+
+CursorColour=253,157,79
 
 ForegroundColour=235,219,178
-BackgroundColour=29,32,33
-CursorColour=253,157,79
+BackgroundColour=40,40,40
+
 Black=40,40,40
 BoldBlack=146,131,116
 Red=204,36,29

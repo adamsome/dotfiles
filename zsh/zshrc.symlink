@@ -27,8 +27,8 @@ done
 
 # Oh My Zsh
 ZSH=$HOME/.oh-my-zsh
-ZSH_THEME="agnoster"
-plugins=(git common-aliases history history-substring-search terminalapp brew zsh-syntax-highlighting tmux)
+ZSH_THEME="adam"
+plugins=(git common-aliases z zsh-syntax-highlighting tmux)
 source $ZSH/oh-my-zsh.sh
 
 # Set ZSH powerline options
