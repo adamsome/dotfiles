@@ -4,10 +4,9 @@ CursorType=block
 CursorBlinks=no
 BoldAsFont=yes
 Scrollbar=none
-
 CursorColour=253,157,79
 ForegroundColour=235,219,178
-BackgroundColour=40,40,40
+BackgroundColour=50,48,47
 Black=40,40,40
 BoldBlack=146,131,116
 Red=204,36,29
