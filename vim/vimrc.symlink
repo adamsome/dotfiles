@@ -593,4 +593,6 @@ highlight ColorColumn ctermbg=236
 "   Local
 "=========================================================
 
+autocmd Filetype java set makeprg=mvn
+set errorformat=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
 set exrc
