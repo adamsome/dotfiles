@@ -509,6 +509,11 @@ let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
 let g:CtrlSpaceSaveWorkspaceOnExit = 1
 
 let g:CtrlSpaceUseUnicode = 0
+<<<<<<< HEAD
+=======
+
+nnoremap <silent><leader><leader> :CtrlSpace O<cr>
+>>>>>>> Add vim plugin conditions
 
 
 nnoremap <silent><leader><leader> :CtrlSpace O<cr>
