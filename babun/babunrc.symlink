@@ -32,3 +32,4 @@ export LC_ALL="en_US.UTF-8"
 
 # Uncomment to enable bloda detection
  export CYGWIN="nodosfilewarning mintty detect_bloda"
+ export CYGWIN="nodosfilewarning mintty"

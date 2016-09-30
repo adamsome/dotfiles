@@ -61,9 +61,9 @@ NeoBundle 'tpope/vim-repeat'
 NeoBundle 'tpope/vim-sleuth'
 
 " Syntax
-NeoBundle 'tpope/vim-markdown', {
-      \     'on_ft': ['markdown']
-      \ }
+"NeoBundle 'tpope/vim-markdown', {
+      "\     'on_ft': ['markdown']
+      "\ }
 NeoBundle 'pangloss/vim-javascript', {
       \     'on_ft': ['javascript']
       \ }
@@ -73,6 +73,9 @@ NeoBundle 'mxw/vim-jsx', {
 NeoBundle 'cespare/vim-toml', {
       \     'on_ft': ['toml']
       \ }
+"NeoBundle 'plasticboy/vim-markdown', {
+      "\     'on_ft':['markdown']
+      "\ }
 
 " Colors
 NeoBundle 'morhetz/gruvbox'
@@ -396,8 +399,9 @@ nnoremap <leader>V <C-w>s
 "nnoremap <C-l> <C-w>l
 
 " Easy search and replace
-nnoremap <leader>f /\v<c-r><c-w>
-nnoremap <leader>g :%s/<c-r><c-w>//gc<left><left><left>
+nnoremap <leader>ff /\v<c-r><c-w><cr>
+nnoremap <leader>fg :%s/<c-r><c-w>//gc<left><left><left>
+nnoremap <leader>fh :Ag! <C-r>=expand('<cword>')<cr><cr>
 
 " Auto center
 nnoremap <silent> n nzz
@@ -408,6 +412,10 @@ nnoremap <silent> g* g*zz
 nnoremap <silent> g# g#zz
 nnoremap <silent> <C-o> <C-o>zz
 nnoremap <silent> <C-i> <C-i>zz
+
+" Mimic unimpaired & fix conflict w/ <tab>/<C-i> and Unite
+nnoremap <silent> [j <C-o>zz
+nnoremap <silent> ]j <C-i>zz
 
 " Tab completion
 " - Will insert tab at beginning of line,
@@ -509,12 +517,6 @@ let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
 let g:CtrlSpaceSaveWorkspaceOnExit = 1
 
 let g:CtrlSpaceUseUnicode = 0
-<<<<<<< HEAD
-=======
-
-nnoremap <silent><leader><leader> :CtrlSpace O<cr>
->>>>>>> Add vim plugin conditions
-
 
 nnoremap <silent><leader><leader> :CtrlSpace O<cr>
 let g:CtrlSpaceProjectRootMarkers = [
@@ -599,15 +601,15 @@ if !empty(glob("~/.vim/bundle/unite.vim/plugin/unite.vim"))
 
     let g:unite_source_history_yank_enable = 1
 
-    nnoremap <Tab> :<C-u>Unite -no-split -auto-preview -select=1 -immediately -buffer-name=mru neomru/file<cr>
+    nnoremap <Tab> :<C-u>Unite -no-split -wipe -auto-preview -select=1 -immediately -buffer-name=mru neomru/file<cr>
     " TODO: Use .gitignore to filter
-    nnoremap <leader>tr :<C-u>Unite -no-split -start-insert -toggle -buffer-name=mixed buffer neomru/file file_rec bookmark<cr><c-u>
+    nnoremap <leader>tr :<C-u>Unite -no-split -wipe -start-insert -toggle -buffer-name=mixed buffer neomru/file file_rec bookmark<cr><c-u>
     "nnoremap <leader>tt :<C-u>Unite -no-split -start-insert -buffer-name=files file_rec<cr>
-    nnoremap <leader>tf :<C-u>Unite -no-split -buffer-name=files file<cr>
+    nnoremap <leader>tf :<C-u>Unite -no-split -wipe -buffer-name=files file<cr>
     nnoremap <leader>ty :<C-u>Unite -auto-preview -buffer-name=yank history/yank<cr>
     "nnoremap <leader>tf :<C-u>Unite -start-insert -no-quit -buffer-name=search grep:.<cr>
     nnoremap <leader>tl :<C-u>Unite -start-insert -direction=dynamictop -auto-resize -buffer-name=line line<cr>
-    nnoremap <leader>tb :<C-u>Unite -no-split -auto-preview -buffer-name=buffer buffer neomru/file<cr>
+    nnoremap <leader>tb :<C-u>Unite -no-split -wipe -auto-preview -buffer-name=buffer buffer neomru/file<cr>
 
     autocmd FileType unite call s:unite_settings()
     function! s:unite_settings()
@@ -617,6 +619,17 @@ if !empty(glob("~/.vim/bundle/unite.vim/plugin/unite.vim"))
         " TODO: Only for MRU (tab)
         nmap <buffer> <Tab> <Plug>(unite_do_default_action)
     endfunction
+
+    augroup unite_wipe_nosplit
+        autocmd!
+        autocmd BufLeave *
+        \   if empty(&bufhidden)
+        \   && &buftype  ==# 'nofile'
+        \   && &filetype ==# 'unite'
+        \   && !unite#get_current_unite().context.split |
+        \       setlocal bufhidden=wipe |
+        \   endif
+    augroup END
 
     if executable('ag')
         let g:unite_source_grep_command = 'ag'
