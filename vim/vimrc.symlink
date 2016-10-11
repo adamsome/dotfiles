@@ -284,7 +284,9 @@ set mousehide           " Hide mouse pointer on insert mode."
 if has("mouse_sgr")
     set ttymouse=sgr
 else
-    set ttymouse=xterm2
+    if !has('nvim')
+      set ttymouse=xterm2
+    endif
 end
 
 
@@ -586,6 +588,9 @@ omap T <Plug>Sneak_T
 let g:tmux_navigator_no_mappings = 1
 
 nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
+if has('nvim')
+    nmap <BS> :TmuxNavigateLeft<cr>
+endif
 nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
@@ -656,9 +661,9 @@ nnoremap <leader>w :BD<cr>
 "   incsearch.vim
 "----------------------------------------------------------
 
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
+"map /  <Plug>(incsearch-forward)
+"map ?  <Plug>(incsearch-backward)
+"map g/ <Plug>(incsearch-stay)
 
 " :h g:incsearch#auto_nohlsearch
 let g:incsearch#auto_nohlsearch = 1
@@ -693,7 +698,7 @@ let g:jsx_ext_required = 0
 
 autocmd BufNewFile,BufReadPost *.toml set filetype=toml
 
-autocmd FileType python nnoremap <buffer> <F9> :exec '!python' shellescape(@%, 1)<cr>
+autocmd FileType python nnoremap <buffer> <F9> :exec '!python3' shellescape(@%, 1)<cr>
 
 
 

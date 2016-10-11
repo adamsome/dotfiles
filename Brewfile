@@ -11,6 +11,7 @@ brew 'python3'
 brew 'the_silver_searcher'
 brew 'tmux'
 brew 'tree'
+brew 'watch'
 brew 'wget'
 brew 'youtube-dl'
 
