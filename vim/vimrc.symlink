@@ -403,7 +403,11 @@ nnoremap <leader>V <C-w>s
 " Easy search and replace
 nnoremap <leader>ff /\v<c-r><c-w><cr>
 nnoremap <leader>fg :%s/<c-r><c-w>//gc<left><left><left>
-nnoremap <leader>fh :Ag! <C-r>=expand('<cword>')<cr><cr>
+
+if executable("ag")
+    set grepprg=ag\ --nogroup\ --nocolor
+    nnoremap <leader>fh :Ag <cword><cr><cr>
+endif
 
 " Auto center
 nnoremap <silent> n nzz
