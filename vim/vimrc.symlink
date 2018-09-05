@@ -53,10 +53,6 @@ NeoBundle 'godlygeek/tabular', {
 NeoBundle 'terryma/vim-multiple-cursors'
 NeoBundle 'justinmk/vim-sneak'
 NeoBundle 'Raimondi/delimitMate'
-NeoBundle 'haya14busa/incsearch.vim', {
-      \     'lazy': 1,
-      \     'on_map': ['<Plug>(incsearch-']
-      \ }
 NeoBundle 'tpope/vim-repeat'
 NeoBundle 'tpope/vim-sleuth'
 
@@ -76,6 +72,7 @@ NeoBundle 'cespare/vim-toml', {
 "NeoBundle 'plasticboy/vim-markdown', {
       "\     'on_ft':['markdown']
       "\ }
+NeoBundle 'exu/pgsql.vim'
 
 " Colors
 NeoBundle 'morhetz/gruvbox'
@@ -355,15 +352,14 @@ inoremap <esc> <nop>
 nnoremap <leader>e :e! ~/.vimrc<cr>
 
 " Sane regexes
-" Using incsearch instead
-"nnoremap / /\v
-"vnoremap / /\v
-"nnoremap ? ?\v
-"vnoremap ? ?\v
-"nnoremap :s/ :s/\v
+nnoremap / /\v
+vnoremap / /\v
+nnoremap ? ?\v
+vnoremap ? ?\v
+nnoremap :s/ :s/\v
 
 " Clear highlight after search
-"noremap <silent><leader>/ :nohlsearch<CR>
+noremap <silent><leader>/ :nohlsearch<CR>
 
 " Middle-click paste
 noremap! <s-insert> <middlemouse>
@@ -487,6 +483,7 @@ let g:NERDTreeDirArrowCollapsible='~'
 "   NERDCommenter
 "----------------------------------------------------------
 
+let g:NERDSpaceDelims = 1
 " Invert comment on the current line/selection
 nmap <c-_> :call NERDComment(0, "invert")<cr>
 vmap <c-_> :call NERDComment(0, "invert")<cr>
@@ -610,15 +607,21 @@ if !empty(glob("~/.vim/bundle/unite.vim/plugin/unite.vim"))
 
     let g:unite_source_history_yank_enable = 1
 
-    nnoremap <Tab> :<C-u>Unite -no-split -wipe -auto-preview -select=1 -immediately -buffer-name=mru neomru/file<cr>
-    " TODO: Use .gitignore to filter
-    nnoremap <leader>tr :<C-u>Unite -no-split -wipe -start-insert -toggle -buffer-name=mixed buffer neomru/file file_rec bookmark<cr><c-u>
-    "nnoremap <leader>tt :<C-u>Unite -no-split -start-insert -buffer-name=files file_rec<cr>
-    nnoremap <leader>tf :<C-u>Unite -no-split -wipe -buffer-name=files file<cr>
-    nnoremap <leader>ty :<C-u>Unite -auto-preview -buffer-name=yank history/yank<cr>
-    "nnoremap <leader>tf :<C-u>Unite -start-insert -no-quit -buffer-name=search grep:.<cr>
+    " Most recently used files
+    nnoremap <Tab> :<C-u>Unite -no-split -wipe -select=1 -immediately -buffer-name=mru neomru/file<cr>
+    " Yank history
+    nnoremap <leader>ty :<C-u>Unite -buffer-name=yank history/yank<cr>
+    " Filter current file's lines
     nnoremap <leader>tl :<C-u>Unite -start-insert -direction=dynamictop -auto-resize -buffer-name=line line<cr>
-    nnoremap <leader>tb :<C-u>Unite -no-split -wipe -auto-preview -buffer-name=buffer buffer neomru/file<cr>
+    " TODO: Use .gitignore to filter
+    " Too slow currently & fuzzy search loses to Ctrl-Space
+    "nnoremap <leader>tr :<C-u>Unite -no-split -wipe -start-insert -toggle -buffer-name=mixed buffer neomru/file file_rec bookmark<cr><c-u>
+    "nnoremap <leader>tt :<C-u>Unite -no-split -start-insert -buffer-name=files file_rec<cr>
+    "nnoremap <leader>tb :<C-u>Unite -no-split -wipe -buffer-name=buffer buffer neomru/file<cr>
+    " Not quite usable as a file tree
+    "nnoremap <leader>tf :<C-u>Unite -no-split -wipe -buffer-name=files file<cr>
+    " Not working correctly
+    "nnoremap <leader>tf :<C-u>Unite -start-insert -no-quit -buffer-name=search grep:.<cr>
 
     autocmd FileType unite call s:unite_settings()
     function! s:unite_settings()
@@ -660,23 +663,6 @@ let g:BufKillOverrideCtrlCaret = 1
 nnoremap <leader>w :BD<cr>
 "nnoremap <Tab> :BB<cr>
 "nnoremap <S-Tab> :BF<cr>
-
-
-"   incsearch.vim
-"----------------------------------------------------------
-
-"map /  <Plug>(incsearch-forward)
-"map ?  <Plug>(incsearch-backward)
-"map g/ <Plug>(incsearch-stay)
-
-" :h g:incsearch#auto_nohlsearch
-let g:incsearch#auto_nohlsearch = 1
-map n  <Plug>(incsearch-nohl-n)
-map N  <Plug>(incsearch-nohl-N)
-map *  <Plug>(incsearch-nohl-*)
-map #  <Plug>(incsearch-nohl-#)
-map g* <Plug>(incsearch-nohl-g*)
-map g# <Plug>(incsearch-nohl-g#)
 
 
 
