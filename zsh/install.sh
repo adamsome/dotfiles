@@ -6,5 +6,5 @@ fi
 
 if ! [ -e ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/adam.zsh-theme ]; then
   echo "> linking custom themes"
-  ln -s $DOTFILES/zsh/custom/themes ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes
+  ln -s $DOTFILES/zsh/custom/themes ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
 fi
