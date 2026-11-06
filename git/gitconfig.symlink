@@ -32,6 +32,11 @@
         #
         # Setting to git 2.0 default to suppress warning message
         default = simple
+[credential]
+	helper = 
+	helper = /usr/local/share/gcm-core/git-credential-manager
+[credential "https://dev.azure.com"]
+	useHttpPath = true
 [user]
 	email = adamsome@gmail.com
 	name = Adam Some
